@@ -9,8 +9,11 @@ const RSVP: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [dramaLevel, setDramaLevel] = useState(0);
   const [showDramaPopup, setShowDramaPopup] = useState(false);
+  const [wasUndecidedOrNo, setWasUndecidedOrNo] = useState(false);
+  const [specialMessage, setSpecialMessage] = useState('');
 
   const dramaticMessages = [
+    "No me eperaba eso de ti... 😢",
     "¿Estás seguro? 🥺",
     "¿Muy muy muy seguro? 🥺",
     "¿Y si te digo que habrá pastel? 🎂",
@@ -36,9 +39,7 @@ const RSVP: React.FC = () => {
     "¿Y si cambio la playlist? Había una canción solo para ti 🎶",
     "¡Casi nadie falta! Tú podrías ser el único 😮",
     "¿Sabías que el 97% de los asistentes viven más felices? 🤯",
-    "Ya me hice la idea... pero con tristeza 😕",
-    "Pensé que serías parte del momento 💭",
-    "¿Qué diría tu yo del pasado? 😩",
+    "Ya me  había hecho la idea... pero con tristeza 😕",
     "Está bien... pero la traición duele 🔪💘",
     "Ya le dije a mis papis que venías 😬",
     "Ya tenía tu nombre en el sorteo 😅",
@@ -46,6 +47,7 @@ const RSVP: React.FC = () => {
     "Esto está escalando emocionalmente rápido 😳",
     "¿Es una excusa real... o estás inventando? 😶",
     "¿Y si en lugar de decir no, solo dices... lo pensaré? 🥹",
+    "Que insistente sos 😤",
     "Ya rendite, realmente no se puede poner que no 🙏"
   ];  
 
@@ -57,6 +59,10 @@ const RSVP: React.FC = () => {
       setDramaLevel((prev) => Math.min(prev + 1, dramaticMessages.length - 1));
       setShowDramaPopup(true);
       return;
+    }
+
+    if (attending === 'yes' && wasUndecidedOrNo) {
+      setSpecialMessage('Gracias, sabía que querías ir 💛');
     }
 
     setLoading(true);
@@ -121,7 +127,9 @@ const RSVP: React.FC = () => {
               </div>
             </div>
             <h3 className="text-xl font-medium text-gray-800 mb-2">¡Gracias!</h3>
-            <p className="text-gray-600">Tu respuesta ha sido registrada.</p>
+            <p className="text-gray-600">
+              {specialMessage || 'Tu respuesta ha sido registrada.'}
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-8 border border-[#D4AF37]/20">
@@ -169,7 +177,10 @@ const RSVP: React.FC = () => {
                     type="radio"
                     value="no"
                     checked={attending === 'no'}
-                    onChange={() => setAttending('no')}
+                    onChange={() => {
+                      setAttending('no');
+                      setWasUndecidedOrNo(true);
+                    }}
                     className="w-4 h-4 text-[#D4AF37] focus:ring-[#D4AF37]"
                   />
                   <span className="ml-2 text-gray-700">No podré asistir</span>
@@ -191,7 +202,6 @@ const RSVP: React.FC = () => {
         )}
       </div>
 
-      {/* Drama Modal */}
       {showDramaPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded-xl shadow-xl max-w-sm text-center relative animate-bounceIn">
